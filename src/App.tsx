@@ -36,10 +36,12 @@ function App() {
     setLoading(false);
   };
 
+
   const checkAnswer = (e: React.MouseEvent<HTMLButtonElement>) => {
 
   };
 
+  
   const nextQuestion = () => {
 
   };
