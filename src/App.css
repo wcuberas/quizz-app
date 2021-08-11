@@ -1,0 +1,15 @@
+body {
+    background-image: url('./image/libraryBooks.jpeg');
+    background-size: cover;
+    margin: 0;
+    padding: 0 20px;
+}
+
+html {
+    height: 100%;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: 'Catamaran', sans-serif;
+}
