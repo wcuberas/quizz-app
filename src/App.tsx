@@ -3,6 +3,7 @@ import QuestionCard from './components/QuestionCard';
 import { fetchQuizQuestions } from './API';
 import { QuestionState, Difficulty } from './API';
 import './App.css'
+import Swal from 'sweetalert2'
 
 export type AnswerObject = {
   question: string;
@@ -34,14 +35,28 @@ function App() {
   const startTrivia = async () => {
     setLoading(true);
     setGameOver(false);
+    if(diff.length === 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Choose a difficulty!',
+        confirmButtonColor: 'hsl(32, 98%, 47%)',
+        background: 'hsla(31, 62%, 85%, 0.94)',
+        
+      })
+      setGameOver(true)
+      setLoading(false)
+    } else {
 
     const newQuestions = await fetchQuizQuestions(TOTAL_QUESTIONS, diff);
-    
+  
     setQuestions(newQuestions);
     setScore(0);
     setUserAnswers([]);
     setNumber(0);
     setLoading(false);
+
+    }
   };
 
 
@@ -70,22 +85,34 @@ function App() {
     }
   };
 
+  const restart = () => {
+    setGameOver(true);
+    setUserAnswers([]);
+    setDiff('');
+  }
+
   return (
     <div className="App">
-      <h1>Books Quiz App</h1>
-      { gameOver || userAnswers.length === TOTAL_QUESTIONS ? (
+      <h1 className='titleApp' >Books Quiz App</h1>
+      { gameOver ? (
         <div>
-          <h4>Choose difficulty</h4>
-          <button value={Difficulty.EASY} onClick={chooseDifficulty}>EASY</button>
-          <button value={Difficulty.MEDIUM} onClick={chooseDifficulty}>MEDIUM</button>
-          <button value={Difficulty.HARD} onClick={chooseDifficulty}>HARD</button>
-          <button onClick={startTrivia}  >
-            Go !!!
-          </button>
+          <div className='container-choose' >
+            <h4 className='choose' >Choose difficulty</h4>
+            <div >
+              <button className='btn' value={Difficulty.EASY} onClick={chooseDifficulty}>EASY</button>
+              <button className='btn' value={Difficulty.MEDIUM} onClick={chooseDifficulty}>MEDIUM</button>
+              <button className='btn' value={Difficulty.HARD} onClick={chooseDifficulty}>HARD</button>
+            </div>
+          </div>
+          <div className='container-start' >
+            <button className='btn start' onClick={startTrivia}  >
+              PRESS START !!!
+            </button>
+          </div>
         </div>
       ) : null }
-      {!gameOver ? <p>Score: {score} </p> : null }
-      {loading ? <p>Loading...</p> : null}
+      {!gameOver ? <p className='choose score' >Score: {score} </p> : null }
+      {loading ? <p className='choose score' >Loading...</p> : null}
       {!loading && !gameOver && (
         <QuestionCard  
           questionNum = {number + 1}
@@ -97,10 +124,19 @@ function App() {
         />
       )}
       {!gameOver && !loading && userAnswers.length === number + 1 && number !== TOTAL_QUESTIONS - 1 ? (
-        <button onClick={nextQuestion}>
-          Next Question
-        </button>
+        <div className='next' >
+          <button className='btn start' onClick={nextQuestion}>
+            Next Question
+          </button>
+        </div>
       ) : null  }
+      { userAnswers.length === TOTAL_QUESTIONS ? (
+        <div className='next' >
+          <button className='btn start' onClick={restart}>
+            RESTART
+          </button>
+        </div>  
+      ) : null }
     </div>
   );
 }
