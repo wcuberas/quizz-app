@@ -5,6 +5,7 @@ import { QuestionState, Difficulty } from './API';
 import './App.css'
 import Swal from 'sweetalert2'
 import db from './Firebase/Firebase';
+import { async } from 'q';
 
 export type AnswerObject = {
   question: string;
@@ -27,6 +28,7 @@ function App() {
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(true);
   const [diff, setDiff] = useState('');
+  const [saved, setSaved] = useState(false)
   
 
   const chooseDifficulty = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -58,6 +60,7 @@ function App() {
     setUserAnswers([]);
     setNumber(0);
     setLoading(false);
+    setSaved(false)
 
     }
   };
@@ -111,6 +114,7 @@ function App() {
       if (result.isConfirmed) {
         db.collection("usuarios").add(resultado);
         ref1.current.value = "";
+        setSaved(true)
         Swal.fire('Saved!', '', 'success')
         
       } else if (result.isDenied) {
@@ -129,12 +133,13 @@ function App() {
     
   }
 
-  const showStats = () => {
-    const result = db.collection("usuarios").get().then((querySnapshot) => {
+  const showStats = async () => {
+    const result = await db.collection("usuarios").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         console.log(`${doc.id} => ${doc.data().score}`)
       })
     })
+
   }
 
   return (
@@ -179,10 +184,10 @@ function App() {
       { userAnswers.length === TOTAL_QUESTIONS ? (
         <div  >
           <div className='container-input'>
-            <input className='input' ref={ref1} type='text' required ></input>
+            <input className='input' ref={ref1} type='text' required placeholder='Write your name' ></input>
           </div>
           <div className='container-buttons'>
-            <button className='btn start' onClick={save} >
+            <button disabled={!!saved} className='btn start' onClick={save} >
               SAVE 
             </button>
             <button className='btn start' onClick={restart}>
