@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import QuestionCard from './components/QuestionCard';
 import { fetchQuizQuestions } from './API';
 import { QuestionState, Difficulty } from './API';
 import './App.css'
 import Swal from 'sweetalert2'
+import db from './Firebase/Firebase';
 
 export type AnswerObject = {
   question: string;
@@ -16,6 +17,8 @@ export type AnswerObject = {
 const TOTAL_QUESTIONS = 10;
 
 function App() {
+
+  const ref1 = useRef(undefined);
 
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState<QuestionState[]>([]);
@@ -91,6 +94,49 @@ function App() {
     setDiff('');
   }
 
+  const save = () => {
+    const resultado = {
+      name: ref1.current.value,
+      score
+    }
+    if(resultado.name) {
+       Swal.fire({
+      title: 'Do you want to save the score?',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: `Save`,
+      denyButtonText: `Don't save`,
+    }).then((result) => {
+      /* Read more about isConfirmed, isDenied below */
+      if (result.isConfirmed) {
+        db.collection("usuarios").add(resultado);
+        ref1.current.value = "";
+        Swal.fire('Saved!', '', 'success')
+        
+      } else if (result.isDenied) {
+        Swal.fire('Changes are not saved', '', 'info')
+      }
+    })
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Must write a name',
+        confirmButtonColor: 'hsl(32, 98%, 47%)',
+        background: 'hsla(31, 62%, 85%, 0.94)',
+      })
+    }
+    
+  }
+
+  const showStats = () => {
+    const result = db.collection("usuarios").get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} => ${doc.data().score}`)
+      })
+    })
+  }
+
   return (
     <div className="App">
       <h1 className='titleApp' >Books Quiz App</h1>
@@ -131,10 +177,21 @@ function App() {
         </div>
       ) : null  }
       { userAnswers.length === TOTAL_QUESTIONS ? (
-        <div className='next' >
-          <button className='btn start' onClick={restart}>
-            RESTART
-          </button>
+        <div  >
+          <div className='container-input'>
+            <input className='input' ref={ref1} type='text' required ></input>
+          </div>
+          <div className='container-buttons'>
+            <button className='btn start' onClick={save} >
+              SAVE 
+            </button>
+            <button className='btn start' onClick={restart}>
+              PLAY AGAIN 
+            </button>
+            <button className='btn start' onClick={showStats} >
+              SHOW STATS
+            </button>
+          </div>
         </div>  
       ) : null }
     </div>
