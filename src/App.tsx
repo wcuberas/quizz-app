@@ -5,7 +5,7 @@ import { QuestionState, Difficulty } from './API';
 import './App.css'
 import Swal from 'sweetalert2'
 import db from './Firebase/Firebase';
-import { async } from 'q';
+import Stats from './components/Stats'
 
 export type AnswerObject = {
   question: string;
@@ -108,7 +108,10 @@ function App() {
       showDenyButton: true,
       showCancelButton: true,
       confirmButtonText: `Save`,
+      confirmButtonColor: 'hsl(151, 71%, 41%)',
       denyButtonText: `Don't save`,
+      denyButtonColor: '#ff5656',
+      background: 'hsla(31, 62%, 85%, 0.94)',
     }).then((result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
@@ -133,13 +136,13 @@ function App() {
     
   }
 
-  const showStats = async () => {
-    const result = await db.collection("usuarios").onSnapshot((querySnapshot) => {
+  const showStats = () => {
+    db.collection("usuarios").orderBy("score", "desc").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         console.log(`${doc.id} => ${doc.data().score}`)
       })
     })
-
+  
   }
 
   return (
@@ -194,7 +197,8 @@ function App() {
               PLAY AGAIN 
             </button>
             <button className='btn start' onClick={showStats} >
-              SHOW STATS
+              
+              <Stats />
             </button>
           </div>
         </div>  
