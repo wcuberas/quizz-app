@@ -16,7 +16,7 @@ Development of a SPA (Single Page Aplication) using React js, Typescript and pur
 
 ### Live Demo
 
-[Link](https://booksquizapp-2f4fa.web.app/ "Título opcional del enlace")
+[Deploy](https://booksquizapp-2f4fa.web.app/ "Deploy")
 
 ---
 
