@@ -6,6 +6,7 @@ import './App.css'
 import Swal from 'sweetalert2'
 import db from './Firebase/Firebase';
 import Stats from './components/Stats'
+import { Modal } from '@material-ui/core';
 
 export type AnswerObject = {
   question: string;
@@ -142,8 +143,8 @@ function App() {
         console.log(`${doc.id} => ${doc.data().score}`)
       })
     })
-  
   }
+
 
   return (
     <div className="App">
@@ -196,9 +197,8 @@ function App() {
             <button className='btn start' onClick={restart}>
               PLAY AGAIN 
             </button>
-            <button className='btn start' onClick={showStats} >
-              
-              <Stats />
+            <button className='btn start' onClick={showStats}>  
+              Show Stats
             </button>
           </div>
         </div>  
